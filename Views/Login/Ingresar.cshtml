@@ -1,0 +1,63 @@
+@{
+    ViewData["Title"] = "Iniciar Sesión";
+}
+
+<style>
+    body {
+        background: url('@Url.Content("~/img/imglogin.jpg")') no-repeat center center fixed;
+        background-size: cover;
+        min-height: 100vh;
+        font-family: 'Montserrat', sans-serif;
+    }
+</style>
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+    <div class="card shadow-lg p-4" style="width: 100%; max-width: 400px; border-radius: 1rem;">
+        <h2 class="text-center fw-bold text-primary mb-4">Iniciar Sesión</h2>
+
+        <form method="post" asp-controller="Login" asp-action="Ingresar" novalidate>
+            <div class="mb-3">
+                <label for="email" class="form-label">Correo electrónico:</label>
+                <input type="email" name="email" id="email" class="form-control" placeholder="Ingresa tu correo electrónico" required autofocus />
+                <div class="invalid-feedback">Por favor, ingresa un correo válido.</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="password" class="form-label">Contraseña:</label>
+                <input type="password" name="password" id="password" class="form-control" placeholder="Ingresa tu contraseña" required />
+                <div class="invalid-feedback">Por favor, ingresa tu contraseña.</div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Ingresar</button>
+        </form>
+
+        @if (ViewBag.Mensaje != null)
+        {
+            <div class="alert alert-danger mt-3" role="alert">@ViewBag.Mensaje</div>
+        }
+
+        <div class="text-center mt-3">
+            <p>¿No tienes una cuenta? <a asp-controller="Register" asp-action="Registrar" class="text-primary fw-bold">Regístrate aquí</a></p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Validación Bootstrap para formularios
+    (() => {
+        'use strict';
+
+        const forms = document.querySelectorAll('form');
+
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+</script>

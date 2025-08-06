@@ -1,0 +1,58 @@
+@model Pg1.Models.RecomendacionViewModel
+
+@if (TempData["Mensaje"] != null)
+{
+    <div class="alert alert-success" role="alert" style="margin-bottom: 1rem;">
+        @TempData["Mensaje"]
+    </div>
+}
+
+<h1>Recomendados</h1>
+<div class="container catalogo-container">
+    <div class="row">
+        @foreach (var producto in Model.ProductosRecomendados)
+        {
+            var rating = Model.Ratings.FirstOrDefault(r => r.ProductId == producto.IdProducto);
+            var formattedRating = rating != null ? rating.NormalizedScore.ToString("0.##") + "%" : "Sin puntuación";
+            var normalizedScore = rating != null ? rating.NormalizedScore : 0;
+
+            <div class="col-sm-4">
+                <div class="producto-card">
+                    <div class="producto-imagen-container">
+                        <img src="~/img/@(producto.ImagenUrl ?? "default.png")" alt="@producto.Nombre" class="producto-imagen" />
+                    </div>
+                    <div class="producto-info">
+                        <h5>@producto.Nombre</h5>
+                        <p class="producto-precio">@producto.Precio.ToString("C")</p>
+                        <div class="rating">
+                            @for (var i = 0; i < (int)(normalizedScore / 20); i++)
+                            {
+                                <span class="star filled">&#9733;</span> <!-- estrella llena -->
+                            }
+                            @for (var i = 0; i < 5 - (int)(normalizedScore / 20); i++)
+                            {
+                                <span class="star">&#9734;</span> <!-- estrella vacía -->
+                            }
+                            <p>Puntuación recomendada: @formattedRating</p>
+
+                            <form asp-controller="Recomendacion" asp-action="AddRating" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="productId" value="@producto.IdProducto" />
+                                <label>Califica:</label>
+                                <select name="ratingValue">
+                                    <option value="1">1 estrella</option>
+                                    <option value="2">2 estrellas</option>
+                                    <option value="3">3 estrellas</option>
+                                    <option value="4">4 estrellas</option>
+                                    <option value="5">5 estrellas</option>
+                                </select>
+                                <button type="submit">Enviar</button>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

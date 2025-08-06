@@ -1,0 +1,44 @@
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <title>Cierre de sesión</title>
+    <script>
+        // Redirigir automáticamente después de 5 segundos
+        setTimeout(function() {
+            window.location.href = "/";
+        }, 5000);
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 150px;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        .message-box {
+            background: white;
+            padding: 30px;
+            border-radius: 6px;
+            box-shadow: 0 0 10px #ccc;
+            display: inline-block;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="message-box">
+        <h2>Su sesión fue cerrada con éxito.</h2>
+        <p>Será redirigido al inicio en unos segundos.</p>
+        <p>Si no es redirigido automáticamente, <a href="/">haga clic aquí</a>.</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,44 @@
+@model Pg1.Models.Contacto
+
+@{
+    ViewBag.Title = "Contacto - GGStore";
+}
+
+<div class="container mt-5 mb-5" style="max-width: 600px;">
+    <h2 class="mb-4 text-center fw-bold text-primary">Contáctanos</h2>
+
+    <form method="post" asp-action="Registrar" novalidate>
+        <div class="mb-4">
+            <label asp-for="Nombres" class="form-label fw-semibold">Nombre completo <span class="text-danger">*</span></label>
+            <input asp-for="Nombres" class="form-control form-control-lg shadow-sm" placeholder="Tu nombre completo" />
+            <span asp-validation-for="Nombres" class="text-danger fst-italic"></span>
+        </div>
+
+        <div class="mb-4">
+            <label asp-for="Email" class="form-label fw-semibold">Correo electrónico <span class="text-danger">*</span></label>
+            <input asp-for="Email" type="email" class="form-control form-control-lg shadow-sm" placeholder="tu@email.com" />
+            <span asp-validation-for="Email" class="text-danger fst-italic"></span>
+        </div>
+
+        <div class="mb-4">
+            <label asp-for="Mensaje" class="form-label fw-semibold">Mensaje <span class="text-danger">*</span></label>
+            <textarea asp-for="Mensaje" class="form-control form-control-lg shadow-sm" rows="6" placeholder="Escribe tu mensaje aquí..."></textarea>
+            <span asp-validation-for="Mensaje" class="text-danger fst-italic"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg w-100 shadow-sm fw-bold">
+            Enviar mensaje
+        </button>
+    </form>
+
+    @if (ViewData["Message"] != null)
+    {
+        <div class="alert alert-info text-center mt-4 shadow-sm" role="alert">
+            @ViewData["Message"]
+        </div>
+    }
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

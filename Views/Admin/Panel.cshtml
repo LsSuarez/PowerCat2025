@@ -1,0 +1,180 @@
+@model Pg1.Models.AdminPanelViewModel
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    ViewData["Title"] = "Panel de administración";
+}
+
+<h2 class="mb-4">Panel de administración - Productos</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
+}
+
+<div class="row">
+    <!-- Lista de productos -->
+    <div class="col-md-8">
+        <h3>Lista de productos</h3>
+        <table class="table table-striped table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Nombre</th>
+                    <th>Categoría</th>
+                    <th>Precio</th>
+                    <th>Stock</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Productos.Any())
+                {
+                    foreach (var producto in Model.Productos)
+                    {
+                        <tr>
+                            <td>@producto.Nombre</td>
+                            <td>@producto.Categoria?.Nombre</td>
+                            <td>@producto.Precio.ToString("C")</td>
+                            <td>@producto.Stock</td>
+                            <td class="text-center">
+                                <a asp-action="Editar" asp-route-id="@producto.IdProducto" class="btn btn-sm btn-warning me-2" title="Editar producto">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form asp-action="Eliminar" method="post" class="d-inline" onsubmit="return confirm('¿Está seguro que desea eliminar este producto?');">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@producto.IdProducto" />
+                                    <button type="submit" class="btn btn-sm btn-danger" title="Eliminar producto">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5" class="text-center fst-italic text-muted">No hay productos registrados.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Formulario Crear/Editar -->
+    <div class="col-md-4">
+        @if (Model.ProductoEdit != null)
+        {
+            <h3>Editar producto</h3>
+            <form asp-action="Editar" method="post" novalidate enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="ProductoEdit.IdProducto" />
+
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <div class="mb-3">
+                    <label asp-for="ProductoEdit.Nombre" class="form-label">Nombre</label>
+                    <input asp-for="ProductoEdit.Nombre" class="form-control @(ViewData.ModelState["ProductoEdit.Nombre"]?.Errors.Any() == true ? "is-invalid" : "")" />
+                    <span asp-validation-for="ProductoEdit.Nombre" class="invalid-feedback"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ProductoEdit.IdCategoria" class="form-label">Categoría</label>
+                    <select asp-for="ProductoEdit.IdCategoria" class="form-select @(ViewData.ModelState["ProductoEdit.IdCategoria"]?.Errors.Any() == true ? "is-invalid" : "")" asp-items="@(new SelectList(Model.Categorias, "IdCategoria", "Nombre"))">
+                        <option value="">-- Seleccione una categoría --</option>
+                    </select>
+                    <span asp-validation-for="ProductoEdit.IdCategoria" class="invalid-feedback"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ProductoEdit.Precio" class="form-label">Precio</label>
+                    <input asp-for="ProductoEdit.Precio" type="number" step="0.01" min="0" class="form-control @(ViewData.ModelState["ProductoEdit.Precio"]?.Errors.Any() == true ? "is-invalid" : "")" />
+                    <span asp-validation-for="ProductoEdit.Precio" class="invalid-feedback"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ProductoEdit.Stock" class="form-label">Stock</label>
+                    <input asp-for="ProductoEdit.Stock" type="number" min="0" class="form-control @(ViewData.ModelState["ProductoEdit.Stock"]?.Errors.Any() == true ? "is-invalid" : "")" />
+                    <span asp-validation-for="ProductoEdit.Stock" class="invalid-feedback"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ProductoEdit.Descripcion" class="form-label">Descripción</label>
+                    <textarea asp-for="ProductoEdit.Descripcion" rows="3" class="form-control @(ViewData.ModelState["ProductoEdit.Descripcion"]?.Errors.Any() == true ? "is-invalid" : "")"></textarea>
+                    <span asp-validation-for="ProductoEdit.Descripcion" class="invalid-feedback"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ProductoEdit.ImagenUrl" class="form-label">URL Imagen</label>
+                    <input asp-for="ProductoEdit.ImagenUrl" class="form-control @(ViewData.ModelState["ProductoEdit.ImagenUrl"]?.Errors.Any() == true ? "is-invalid" : "")" />
+                    <span asp-validation-for="ProductoEdit.ImagenUrl" class="invalid-feedback"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">Guardar cambios</button>
+                <a asp-action="Panel" class="btn btn-outline-secondary w-100 mt-2">Cancelar</a>
+            </form>
+        }
+        else
+        {
+            <h3>Crear nuevo producto</h3>
+            <form asp-action="Create" method="post" novalidate enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <div class="mb-3">
+                    <label asp-for="NuevoProducto.Nombre" class="form-label">Nombre</label>
+                    <input asp-for="NuevoProducto.Nombre" class="form-control @(ViewData.ModelState["NuevoProducto.Nombre"]?.Errors.Any() == true ? "is-invalid" : "")" />
+                    <span asp-validation-for="NuevoProducto.Nombre" class="invalid-feedback"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="NuevoProducto.IdCategoria" class="form-label">Categoría</label>
+                    <select asp-for="NuevoProducto.IdCategoria" class="form-select @(ViewData.ModelState["NuevoProducto.IdCategoria"]?.Errors.Any() == true ? "is-invalid" : "")" asp-items="@(new SelectList(Model.Categorias, "IdCategoria", "Nombre"))">
+                        <option value="">-- Seleccione una categoría --</option>
+                    </select>
+                    <span asp-validation-for="NuevoProducto.IdCategoria" class="invalid-feedback"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="NuevoProducto.Precio" class="form-label">Precio</label>
+                    <input asp-for="NuevoProducto.Precio" type="number" step="0.01" min="0" class="form-control @(ViewData.ModelState["NuevoProducto.Precio"]?.Errors.Any() == true ? "is-invalid" : "")" />
+                    <span asp-validation-for="NuevoProducto.Precio" class="invalid-feedback"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="NuevoProducto.Stock" class="form-label">Stock</label>
+                    <input asp-for="NuevoProducto.Stock" type="number" min="0" class="form-control @(ViewData.ModelState["NuevoProducto.Stock"]?.Errors.Any() == true ? "is-invalid" : "")" />
+                    <span asp-validation-for="NuevoProducto.Stock" class="invalid-feedback"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="NuevoProducto.Descripcion" class="form-label">Descripción</label>
+                    <textarea asp-for="NuevoProducto.Descripcion" rows="3" class="form-control @(ViewData.ModelState["NuevoProducto.Descripcion"]?.Errors.Any() == true ? "is-invalid" : "")"></textarea>
+                    <span asp-validation-for="NuevoProducto.Descripcion" class="invalid-feedback"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="NuevoProducto.ImagenFile" class="form-label">Subir imagen</label>
+                    <input asp-for="NuevoProducto.ImagenFile" type="file" accept="image/*" class="form-control @(ViewData.ModelState["NuevoProducto.ImagenFile"]?.Errors.Any() == true ? "is-invalid" : "")" />
+                    <span asp-validation-for="NuevoProducto.ImagenFile" class="invalid-feedback"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="NuevoProducto.ImagenUrl" class="form-label">O usar URL imagen</label>
+                    <input asp-for="NuevoProducto.ImagenUrl" class="form-control @(ViewData.ModelState["NuevoProducto.ImagenUrl"]?.Errors.Any() == true ? "is-invalid" : "")" />
+                    <span asp-validation-for="NuevoProducto.ImagenUrl" class="invalid-feedback"></span>
+                </div>
+
+                <button type="submit" class="btn btn-success w-100">Agregar producto</button>
+            </form>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

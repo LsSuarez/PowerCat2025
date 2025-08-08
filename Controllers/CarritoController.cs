@@ -59,7 +59,6 @@ namespace Pg1.Controllers
             return RedirectToAction("Index");
         }
 
-
         [HttpPost]
         public IActionResult ActualizarCantidad(int idProducto, int cantidad)
         {
@@ -116,13 +115,12 @@ namespace Pg1.Controllers
             // Elimina el carrito de la sesión
             HttpContext.Session.Remove(SessionKeyName);
             
-            // Opcional: Mensaje de confirmación y podra ver todos los productos correctamente 
+            // Opcional: Mensaje de confirmación y podrá ver todos los productos correctamente 
             TempData["Mensaje"] = "El carrito se ha vaciado correctamente";
             
             // Redirige de vuelta al índice del carrito
             return RedirectToAction("Index");
         }
-
 
         [HttpGet]
         public IActionResult Checkout()
@@ -153,7 +151,7 @@ namespace Pg1.Controllers
                 FechaPedido = DateTime.UtcNow,
                 Estado = "Pendiente",
                 Total = carrito.Items.Sum(i => i.Subtotal),
-                IdCliente = 1, // Temporal
+                IdCliente = 1, // Temporal: Cambiar a obtener el cliente actual en un sistema de autenticación
                 Detalles = carrito.Items.Select(i => new DetallePedido
                 {
                     IdProducto = i.Producto.IdProducto,
@@ -180,7 +178,8 @@ namespace Pg1.Controllers
 
             return RedirectToAction("Pago");
         }
-        //Una vez seleccionado los productos el carrito vacio va intentar acceder ala pagina de pago.
+
+        // Una vez seleccionado los productos el carrito vacío va a intentar acceder a la página de pago.
         public IActionResult Pago()
         {
             var carrito = GetCarrito();
@@ -192,7 +191,8 @@ namespace Pg1.Controllers
 
             return View(new PedidoViewModel { Carrito = carrito });
         }
-        //Saldra un error de pago si no hay un pedido o producto seleccionado
+
+        // Saldra un error de pago si no hay un pedido o producto seleccionado
         public IActionResult ConfirmacionPaypal(string orderId)
         {
             var idPedido = HttpContext.Session.GetInt32("UltimoPedidoId");
@@ -201,7 +201,7 @@ namespace Pg1.Controllers
                 ViewBag.Error = "No se encontró el pedido para registrar el pago.";
                 return View();
             }
-            // El pedido no registra en la base de datos por eso tiene condicion if
+            // El pedido no registra en la base de datos por eso tiene condición if
             
             var pedido = _context.Pedidos.FirstOrDefault(p => p.IdPedido == idPedido.Value);
             if (pedido == null)
@@ -209,7 +209,8 @@ namespace Pg1.Controllers
                 ViewBag.Error = "No se encontró el pedido en la base de datos.";
                 return View();
             }
-            // Vemos que el paypal ya este en estado completado y listo.
+
+            // Verificamos que el Paypal ya esté en estado completado y listo.
             var pago = new Pago
             {
                 IdPedido = pedido.IdPedido,
@@ -240,7 +241,8 @@ namespace Pg1.Controllers
             }
             return carrito;
         }
-        //Una vez realizado el pago el carrito queda sin producto.
+
+        // Una vez realizado el pago el carrito queda sin productos.
         private void SaveCarrito(Carrito carrito)
         {
             HttpContext.Session.Set(SessionKeyName, carrito);

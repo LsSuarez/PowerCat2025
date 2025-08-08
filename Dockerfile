@@ -3,7 +3,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 WORKDIR /app
 
 # Copiar el archivo del proyecto y restaurar dependencias
-COPY Pg1.csproj ./ 
+COPY Pg1.csproj ./
 RUN dotnet restore
 
 # Copiar el resto de los archivos y compilar la aplicación
@@ -25,5 +25,5 @@ ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 # Exponer el puerto que Render utilizará
 EXPOSE 8080
 
-# Comando para ejecutar la aplicación
+# Agregar un entrypoint adicional para mayor control sobre el contenedor
 ENTRYPOINT ["dotnet", "Pg1.dll"]
